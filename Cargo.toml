@@ -1,0 +1,12 @@
+[package]
+name = "simple_ctv_csfs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bitcoin = "0.32.6"
+
+[features]
+default = ["regtest"]
+signet = []
+regtest = []
