@@ -3,7 +3,7 @@
 A very simple example of how you can use OP_CHECKTEMPLATEVERIFY [(BIP-119)][bip119] with OP_CHECKSIGFROMSTACK [(BIP-348)][bip348] to create a transaction that can be pre-signed without committing to a specific input
 
 [bip119]: https://github.com/bitcoin/bips/blob/master/bip-0119.mediawiki
-[bip348]: https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki
+[bip348]: https://github.com/bitcoin/bips/blob/master/bip-0348.md
 
 https://mutinynet.com/tx/a2ae60808d57bbd7fbf73e6a41575d33b1492b73bcd51a59e9cfe457d17dfb57
 
