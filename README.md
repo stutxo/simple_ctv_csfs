@@ -1,6 +1,6 @@
 # Simple CTV+CSFS 🥪+🥞=🪄
 
-A very simple example of how you can use OP_CHECKTEMPLATEVERIFY [(BIP-199)][bip119] with OP_CHECKSIGFROMSTACK [(BIP-348)][bip348] to create a transaction that can be pre-signed without committing to a specific input
+A very simple example of how you can use OP_CHECKTEMPLATEVERIFY [(BIP-119)][bip119] with OP_CHECKSIGFROMSTACK [(BIP-348)][bip348] to create a transaction that can be pre-signed without committing to a specific input
 
 [bip119]: https://github.com/bitcoin/bips/blob/master/bip-0119.mediawiki
 [bip348]: https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki
