@@ -74,7 +74,7 @@ fn main() {
 
     // we dont need to know this info before signing the transaction! magic!
     let txid =
-        Txid::from_str("9160225d80dc1de1022d8f4ad2e5c056d17d41ec0efa73ee9f4b62ef3af488f6").unwrap();
+        Txid::from_str("a008c0640baedc8516902d1f67244269b5262f55c03c622485e8bb97c313725a").unwrap();
 
     let inputs = vec![TxIn {
         previous_output: OutPoint {

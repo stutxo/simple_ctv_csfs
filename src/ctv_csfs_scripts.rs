@@ -65,8 +65,9 @@ pub fn create_ctv_csfs_address(
 ) -> Result<TaprootSpendInfo, Error> {
     let secp = Secp256k1::new();
 
-    let random_pubkey = XOnlyPublicKey::from_str(
-        "684f83a6443c5bc7fb8e48360b61abf4379a3140797da18589bceff7f0910c23",
+    //"Nothing Up My Sleeve" public key
+    let nums_pubkey = XOnlyPublicKey::from_str(
+        "48755882774d45eaaddb6a628b291796cc3a21680a2a983cb7fbc6dbc416957a",
     )
     .unwrap();
 
@@ -75,7 +76,7 @@ pub fn create_ctv_csfs_address(
     let taproot_spend_info = TaprootBuilder::new()
         .add_leaf(0, script)
         .unwrap()
-        .finalize(&secp, random_pubkey)
+        .finalize(&secp, nums_pubkey)
         .unwrap();
 
     Ok(taproot_spend_info)
