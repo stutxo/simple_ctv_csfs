@@ -101,8 +101,8 @@ This will output the `CTV+CSFS contract address`.
 Next, send funds to the contract address you just generated. Once the funding transaction is confirmed, you can create the final spending transaction.
 
 ```bash
-# Provide the same address and the txid of your funding transaction
-cargo run -- --network <network> --to-address <your_address> --txid <funding_txid>
+# Provide the same address, the txid, and the vout of your funding transaction
+cargo run -- --network <network> --to-address <your_address> --txid <funding_txid> --vout <funding_vout>
 ```
 
 This will output the raw transaction hex, which you can then broadcast using your node.

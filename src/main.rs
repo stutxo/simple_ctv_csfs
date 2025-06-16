@@ -38,6 +38,10 @@ struct Cli {
     /// The txid of the funding transaction
     #[arg(short = 't', long)]
     txid: Option<String>,
+
+    /// The vout of the funding transaction
+    #[arg(short = 'v', long)]
+    vout: Option<u32>,
 }
 
 fn main() {
@@ -90,12 +94,14 @@ fn main() {
     // create ctv+csfs contract address
     let tr_spend_info = create_ctv_csfs_address(ctv_hash, pubkey).unwrap();
     let contract_address = Address::p2tr_tweaked(tr_spend_info.output_key(), network);
-    println!("CTV+CSFS contract address: {}", contract_address);
+    println!("\n\nCTV+CSFS contract address: {}", contract_address);
 
-    let txid = if let Some(txid_str) = cli.txid {
-        Txid::from_str(&txid_str).expect("Failed to parse txid")
+    let (txid, vout) = if let Some(txid_str) = cli.txid {
+        let txid = Txid::from_str(&txid_str).expect("Failed to parse txid");
+        let vout = cli.vout.expect("The --vout argument is required when --txid is provided");
+        (txid, vout)
     } else {
-        println!("\nRun the program again with the txid of the funding transaction to get the raw transaction");
+        println!("\nRun the program again with the --txid and --vout of the funding transaction to get the raw transaction");
         return;
     };
 
@@ -109,7 +115,7 @@ fn main() {
     let inputs = vec![TxIn {
         previous_output: OutPoint {
             txid,
-            vout: 1,
+            vout,
         },
         sequence: Sequence::ENABLE_RBF_NO_LOCKTIME,
         ..Default::default()
