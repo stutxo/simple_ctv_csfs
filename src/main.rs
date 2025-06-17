@@ -12,14 +12,46 @@ use bitcoin::{
     transaction::{self},
     Address, Amount, OutPoint, Sequence, Transaction, TxIn, TxOut, Txid,
 };
-
-const NETWORK: bitcoin::Network = bitcoin::Network::Signet;
+use clap::{Parser, ValueEnum};
 
 mod ctv_csfs_scripts;
 
 const SPEND_AMOUNT: Amount = Amount::from_sat(6969);
 
+#[derive(ValueEnum, Clone, Debug)]
+enum NetworkArg {
+    Signet,
+    Regtest,
+}
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    /// The network to use
+    #[arg(short = 'n', long, value_enum, default_value_t = NetworkArg::Signet)]
+    network: NetworkArg,
+
+    /// The address to send the funds to
+    #[arg(short = 'a', long)]
+    to_address: String,
+
+    /// The txid of the funding transaction
+    #[arg(short = 't', long)]
+    txid: Option<String>,
+
+    /// The vout of the funding transaction
+    #[arg(short = 'v', long)]
+    vout: Option<u32>,
+}
+
 fn main() {
+    let cli = Cli::parse();
+
+    let network = match cli.network {
+        NetworkArg::Signet => bitcoin::Network::Signet,
+        NetworkArg::Regtest => bitcoin::Network::Regtest,
+    };
+
     let secp = Secp256k1::new();
 
     let key = "7457e13133b7e90bcf6caa4165a14833153fd6164be95fc4a22829c26455a10a";
@@ -40,11 +72,10 @@ fn main() {
         .push_slice(op_return_bytes)
         .into_script();
 
-    let mutiny_faucet_address = "tb1qd28npep0s8frcm3y7dxqajkcy2m40eysplyr9v";
-    let ctv_spend_to_address = Address::from_str(mutiny_faucet_address)
-        .unwrap()
-        .require_network(NETWORK)
-        .unwrap();
+    let ctv_spend_to_address = Address::from_str(&cli.to_address)
+        .expect("Failed to parse address")
+        .require_network(network)
+        .expect("Address not valid for this network");
 
     let ctv_tx_out = [
         TxOut {
@@ -62,8 +93,17 @@ fn main() {
 
     // create ctv+csfs contract address
     let tr_spend_info = create_ctv_csfs_address(ctv_hash, pubkey).unwrap();
-    let contract_address = Address::p2tr_tweaked(tr_spend_info.output_key(), NETWORK);
-    println!("CTV+CSFS contract address: {}", contract_address);
+    let contract_address = Address::p2tr_tweaked(tr_spend_info.output_key(), network);
+    println!("\n\nCTV+CSFS contract address: {}", contract_address);
+
+    let (txid, vout) = if let Some(txid_str) = cli.txid {
+        let txid = Txid::from_str(&txid_str).expect("Failed to parse txid");
+        let vout = cli.vout.expect("The --vout argument is required when --txid is provided");
+        (txid, vout)
+    } else {
+        println!("\nRun the program again with the --txid and --vout of the funding transaction to get the raw transaction");
+        return;
+    };
 
     // create the signature before we even know the inputs!!!
     let msg = Message::from_digest_slice(&ctv_hash).unwrap();
@@ -72,14 +112,10 @@ fn main() {
         .as_ref()
         .to_vec();
 
-    // we dont need to know this info before signing the transaction! magic!
-    let txid =
-        Txid::from_str("a008c0640baedc8516902d1f67244269b5262f55c03c622485e8bb97c313725a").unwrap();
-
     let inputs = vec![TxIn {
         previous_output: OutPoint {
-            txid: txid,
-            vout: 1,
+            txid,
+            vout,
         },
         sequence: Sequence::ENABLE_RBF_NO_LOCKTIME,
         ..Default::default()

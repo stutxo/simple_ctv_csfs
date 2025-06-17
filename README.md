@@ -78,3 +78,31 @@ https://mutinynet.com/tx/86990eb12f4d86bae21ec2e0e6eac6298d696d84c710c3e0a813c76
 ```
 
 ![alt text](image.png)
+
+## How to Run
+
+This application requires a two-step process to generate and spend from the contract.
+
+### 1. Get the Contract Address
+
+First, generate the contract address. You will need a destination address on the desired network (`regtest` or `signet`).
+
+```bash
+# For regtest
+cargo run -- --network regtest --to-address <your_regtest_address>
+
+# For signet (default)
+cargo run -- --to-address <your_signet_address>
+```
+This will output the `CTV+CSFS contract address`.
+
+### 2. Create the Transaction
+
+Next, send funds to the contract address you just generated. Once the funding transaction is confirmed, you can create the final spending transaction.
+
+```bash
+# Provide the same address, the txid, and the vout of your funding transaction
+cargo run -- --network <network> --to-address <your_address> --txid <funding_txid> --vout <funding_vout>
+```
+
+This will output the raw transaction hex, which you can then broadcast using your node.
